@@ -1,0 +1,10 @@
+{
+  "token": "Token",
+  "prefix": "!",
+  "database": {
+    "username": "Username",
+    "password":"Password",
+    "database_name":"Database",
+    "collection_name": "Collection"
+  }
+}

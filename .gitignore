@@ -1,1 +1,5 @@
-Java.gitignore
+src/main/resources/options.json
+src/test
+src/main/java/test
+target
+.gitignore
