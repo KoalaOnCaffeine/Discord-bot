@@ -11,8 +11,6 @@ import net.dv8tion.jda.core.JDABuilder
 import org.bson.Document
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import test.GuildOnlyTestCommand
-import test.UniversalTestCommand
 import java.awt.Desktop
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -40,8 +38,6 @@ fun main() {
     }
 
     commandRegister.register(TestCommand(guilds))
-    commandRegister.register(UniversalTestCommand())
-    commandRegister.register(GuildOnlyTestCommand())
 
     bot = JDABuilder(values["token"] as String).build()
     bot.addEventListener(CommandListener(values.getValue("prefix")!!, commandRegister))
