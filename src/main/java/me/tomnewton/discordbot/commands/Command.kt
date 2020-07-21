@@ -4,6 +4,7 @@ import me.tomnewton.discordbot.alerts.AlertV2
 import me.tomnewton.discordbot.alerts.options.simple.ContentOption
 import me.tomnewton.discordbot.alerts.options.simple.TitleOption
 import me.tomnewton.discordbot.commands.arguments.Arguments
+import me.tomnewton.discordbot.placeholders.Placeholder
 import me.tomnewton.discordbot.utils.DelayContext
 import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
@@ -36,8 +37,12 @@ interface Command {
     val usage: String
         get() = "$name has an undocumented usage"
 
-    val aliases: List<String>
-        get() = emptyList()
+    val aliases: Array<String>
+        get() = emptyArray()
+
+    val usablePlaceholders: Array<Placeholder<*>>
+        get() = emptyArray()
+
 
     fun execute(message: Message, channel: MessageChannel, arguments: Arguments<String>)
 
