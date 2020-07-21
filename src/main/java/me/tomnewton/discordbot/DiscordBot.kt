@@ -1,7 +1,6 @@
 package me.tomnewton.discordbot
 
-import com.mongodb.client.MongoCollection
-import me.tomnewton.discordbot.commands.CommandRegister
+import me.tomnewton.discordbot.commands.CommandRegistry
 import me.tomnewton.discordbot.commands.TestCommand
 import me.tomnewton.discordbot.database.DatabaseConnector
 import me.tomnewton.discordbot.database.MongooseConnector
@@ -11,12 +10,9 @@ import net.dv8tion.jda.core.JDABuilder
 import org.bson.Document
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import java.awt.Desktop
-import java.nio.file.Files
-import java.nio.file.Paths
 
 private lateinit var bot: JDA
-private val commandRegister = CommandRegister()
+private val commandRegister = CommandRegistry()
 val parser: JSONParser = JSONParser()
 
 private val guilds = mutableMapOf<Long, Document>()
@@ -34,7 +30,7 @@ fun main() {
     val collection = (connector as MongooseConnector).getCollection("Database.Collection")
 
     collection.find().forEach {
-        guilds[it["Guild ID"].toString().toLong()] =  it
+        guilds[it["Guild ID"].toString().toLong()] = it
     }
 
     commandRegister.register(TestCommand(guilds))
@@ -44,15 +40,15 @@ fun main() {
     bot.awaitReady()
 }
 
-fun <T> JSONObject.getValue(path: String): T? {
+inline fun <reified T> JSONObject.getValue(path: String): T? {
     if (path.contains('.')) {
         val paths = path.split(".")
         var current: JSONObject = get(paths[0]) as JSONObject
         paths.forEachIndexed { index, value ->
             if (index == 0) return@forEachIndexed
-            if (index == paths.size - 1) return current[value] as T
+            if (index == paths.size - 1) return current[value] as T?
             current = (current[value] as JSONObject? ?: return null)
         }
         return null
-    } else return getOrDefault(path, null) as T
+    } else return getOrDefault(path, null) as T?
 }
