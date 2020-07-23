@@ -2,11 +2,14 @@ package me.tomnewton.discordbot
 
 import me.tomnewton.discordbot.commands.CommandRegistry
 import me.tomnewton.discordbot.commands.TestCommand
+import me.tomnewton.discordbot.commands.information.PlaceholderListCommand
 import me.tomnewton.discordbot.database.DatabaseConnector
 import me.tomnewton.discordbot.database.MongooseConnector
 import me.tomnewton.discordbot.listeners.CommandListener
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.JDABuilder
+import net.dv8tion.jda.core.entities.Member
+import net.dv8tion.jda.core.entities.User
 import org.bson.Document
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
@@ -17,9 +20,14 @@ val parser: JSONParser = JSONParser()
 
 private val guilds = mutableMapOf<Long, Document>()
 
+private lateinit var prefix: String
+
+fun getMember(using: User): Member? = bot.getMutualGuilds(using).getOrNull(0)?.getMember(using)
+
 fun main() {
     val json = String(ClassLoader.getSystemResource("options.json").readBytes())
     val values = parser.parse(json) as JSONObject
+    prefix = values.getValue("prefix")!!
     val connector: DatabaseConnector = MongooseConnector(
             values.getValue("database.username")!!,
             values.getValue("database.password")!!,
@@ -34,9 +42,10 @@ fun main() {
     }
 
     commandRegister.register(TestCommand(guilds))
+    commandRegister.register(PlaceholderListCommand(prefix, commandRegister))
 
     bot = JDABuilder(values["token"] as String).build()
-    bot.addEventListener(CommandListener(values.getValue("prefix")!!, commandRegister))
+    bot.addEventListener(CommandListener(prefix, commandRegister))
     bot.awaitReady()
 }
 
