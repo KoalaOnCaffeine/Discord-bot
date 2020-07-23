@@ -7,8 +7,8 @@ class CommandRegistry : Registry<String, Command> {
     override val map = mutableMapOf<String, Command>()
 
     override fun register(value: Command) {
-        map[value.name.toLowerCase()] = value
-        value.aliases.map(String::toLowerCase).forEach { map[it] = value }
+        map[value.getName().toLowerCase()] = value
+        value.getAliases().map(String::toLowerCase).forEach { map[it] = value }
     }
 
     override fun contains(key: String) = map.containsKey(key.toLowerCase())
