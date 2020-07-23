@@ -17,11 +17,11 @@ class CommandListener(private val prefix: String, private val commandRegistry: C
         val commandName = parts[0].substring(prefix.length)
         if (!commandRegistry.contains(commandName)) return
         val command: Command = commandRegistry.get(commandName)!!
-        if (event.channelType == ChannelType.PRIVATE && !command.usableInDM) return
+        if (event.channelType == ChannelType.PRIVATE && !command.getUsableInDM()) return
         val arguments: Arguments<String> = if (parts.size == 1)
             Arguments(emptyList()) else Arguments(parts.subList(1, parts.size))
 
-        if (command.minimumArguments > arguments.size) {
+        if (command.getMinimumArguments() > arguments.size) {
             // TODO send the usage
         } else {
             command.execute(event.message, event.channel, arguments)
