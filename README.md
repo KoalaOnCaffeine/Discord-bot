@@ -5,7 +5,7 @@
 
 Setup instructions can be found [here](SETUP.md)
 
-Please take the time to read this concise version of the licence. A link to the full and original licence has been provided also a link to a summary version
+Please take the time to read this concise version of the licence. A link to the full and original licence has been provided also a link to a summary version.
 
 **THIS TEXT IS NOT A REPLACEMENT FOR THE ORIGINAL LICENCE. THIS TEXT SERVES AS A SIMPLIFIED AND COMPREHENSIVE AID TO THE ORIGINAL VERSION.**
 
