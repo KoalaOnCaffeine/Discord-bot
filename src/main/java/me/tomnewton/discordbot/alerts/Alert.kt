@@ -4,9 +4,9 @@ import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageChannel
 
-class AlertV2(apply: AlertV2.() -> Unit = {}) {
+class Alert(apply: Alert.() -> Unit = {}) {
 
-    private val builder = EmbedBuilder()
+    val builder = EmbedBuilder()
     private val options = AlertDefaults()
     private var sent = false
     private lateinit var message: Message
@@ -17,6 +17,8 @@ class AlertV2(apply: AlertV2.() -> Unit = {}) {
 
     /**
      * A higher-order way of editing the [AlertDefaults]
+     *
+     * @param block The function to edit the options
      */
 
     fun editOptions(block: AlertDefaults.() -> Unit) {
@@ -25,6 +27,8 @@ class AlertV2(apply: AlertV2.() -> Unit = {}) {
 
     /**
      * A higher-order way of editing the [EmbedBuilder]
+     *
+     * @param block The function to edit the embed
      */
 
     fun editEmbed(block: EmbedBuilder.() -> Unit) {
