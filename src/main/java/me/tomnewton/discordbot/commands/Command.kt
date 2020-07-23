@@ -1,58 +1,48 @@
 package me.tomnewton.discordbot.commands
 
-import me.tomnewton.discordbot.alerts.AlertV2
+import me.tomnewton.discordbot.alerts.Alert
 import me.tomnewton.discordbot.alerts.options.simple.ContentOption
 import me.tomnewton.discordbot.alerts.options.simple.TitleOption
 import me.tomnewton.discordbot.commands.arguments.Arguments
-import me.tomnewton.discordbot.placeholders.Placeholder
+import me.tomnewton.discordbot.placeholders.Placeholders
 import me.tomnewton.discordbot.utils.DelayContext
-import net.dv8tion.jda.core.entities.Member
 import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageChannel
-import net.dv8tion.jda.core.entities.User
+
+private val DEFAULT_TITLE = TitleOption("No title")
+private val DEFAULT_CONTENT = ContentOption("No content")
 
 interface Command {
 
-    companion object {
-        private val DEFAULT_TITLE = TitleOption("No title")
-        private val DEFAULT_CONTENT = ContentOption("No content")
+    fun getName(): String
 
-        private fun AlertV2.registerDefaults() {
-            editOptions {
-                registerOption(DEFAULT_TITLE, false)
-                registerOption(DEFAULT_CONTENT, false)
-            }
-        }
+    fun getUsableInDM(): Boolean = false
 
-    }
+    fun getMinimumArguments(): Int = 0
 
-    val name: String
+    fun getUsage(): String = "${getName()} has an undocumented usage"
 
-    val usableInDM: Boolean
-        get() = false
+    fun getAliases(): Array<String> = emptyArray()
 
-    val minimumArguments: Int
-        get() = 0
-
-    val usage: String
-        get() = "$name has an undocumented usage"
-
-    val aliases: Array<String>
-        get() = emptyArray()
-
-    val usablePlaceholders: Array<Placeholder<*>>
-        get() = emptyArray()
-
+    fun getPlaceholders(): Placeholders<Alert> = Placeholders.empty()
 
     fun execute(message: Message, channel: MessageChannel, arguments: Arguments<String>)
 
-    fun respond(message: Message, channel: MessageChannel, alert: AlertV2, delayContext: DelayContext = DelayContext()) {
+    fun respond(message: Message, channel: MessageChannel, alert: Alert, delayContext: DelayContext = DelayContext(), parameters: Array<Any> = emptyArray()) {
         alert.registerDefaults()
+        getPlaceholders().applyAllPlaceholders(alert, parameters)
         alert.send(channel).apply {
             if (delayContext.delay > 0) {
                 message.deleteAfter(delayContext)
                 deleteAfter(delayContext)
             }
+        }
+    }
+
+    private fun Alert.registerDefaults() {
+        editOptions {
+            registerOption(DEFAULT_TITLE, false)
+            registerOption(DEFAULT_CONTENT, false)
         }
     }
 
