@@ -1,4 +1,4 @@
-package me.tomnewton.discordbot.utils
+package me.tomnewton.discordbot.registries
 
 interface Registry<K, V> {
 
