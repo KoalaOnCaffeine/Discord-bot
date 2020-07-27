@@ -1,51 +1,62 @@
 package me.tomnewton.discordbot
 
-import me.tomnewton.discordbot.commands.CommandRegistry
 import me.tomnewton.discordbot.commands.TestCommand
 import me.tomnewton.discordbot.commands.information.PlaceholderListCommand
-import me.tomnewton.discordbot.database.DatabaseConnector
-import me.tomnewton.discordbot.database.MongooseConnector
+import me.tomnewton.discordbot.database.Database
+import me.tomnewton.discordbot.database.Model
+import me.tomnewton.discordbot.database.mongo.MongoDatabase
 import me.tomnewton.discordbot.listeners.CommandListener
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.JDABuilder
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
-import org.bson.Document
+import me.tomnewton.discordbot.listeners.GuildJoinListener
+import me.tomnewton.discordbot.registries.CommandRegistry
+import me.tomnewton.discordbot.registries.ListenerRegistry
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.requests.GatewayIntent
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 
 private lateinit var bot: JDA
-private val commandRegister = CommandRegistry()
 val parser: JSONParser = JSONParser()
 
-private val guilds = mutableMapOf<Long, Document>()
+private val guilds = mutableMapOf<Long, Model>()
+private val json = String(ClassLoader.getSystemResource("options.json").readBytes())
+private val values = parser.parse(json) as JSONObject
 
 private lateinit var prefix: String
 
 fun getMember(using: User): Member? = bot.getMutualGuilds(using).getOrNull(0)?.getMember(using)
 
 fun main() {
-    val json = String(ClassLoader.getSystemResource("options.json").readBytes())
-    val values = parser.parse(json) as JSONObject
+    bot = JDABuilder.create(GatewayIntent.getIntents(GatewayIntent.DEFAULT)).setToken(values["token"] as String).build()
+    val commandRegister = CommandRegistry()
+    val listenerRegistry = ListenerRegistry(bot)
     prefix = values.getValue("prefix")!!
-    val connector: DatabaseConnector = MongooseConnector(
+
+    val database: Database = MongoDatabase.create(
             values.getValue("database.username")!!,
             values.getValue("database.password")!!,
-            values.getValue("database.database_name")!!)
+            values.getValue("database.database_name")!!, "Collection")
 
-    connector.connect()
+    database.connect()
 
-    val collection = (connector as MongooseConnector).getCollection("Database.Collection")
+    database.find().forEach {
+        guilds[it.get("Guild ID").toString().toLong()] = it
+    }
 
-    collection.find().forEach {
-        guilds[it["Guild ID"].toString().toLong()] = it
+    database.find().forEach {
+        println(it.values)
     }
 
     commandRegister.register(TestCommand(guilds))
     commandRegister.register(PlaceholderListCommand(prefix, commandRegister))
 
-    bot = JDABuilder(values["token"] as String).build()
-    bot.addEventListener(CommandListener(prefix, commandRegister))
+    listenerRegistry.register(setOf(
+            CommandListener(prefix, commandRegister),
+            GuildJoinListener(database)
+    ))
+
     bot.awaitReady()
 }
 

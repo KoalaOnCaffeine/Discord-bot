@@ -1,8 +1,9 @@
 package me.tomnewton.discordbot.alerts
 
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageChannel
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageChannel
+
 
 class Alert(apply: Alert.() -> Unit = {}) {
 

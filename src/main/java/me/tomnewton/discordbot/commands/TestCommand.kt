@@ -3,13 +3,14 @@ package me.tomnewton.discordbot.commands
 import me.tomnewton.discordbot.alerts.Alert
 import me.tomnewton.discordbot.alerts.options.simple.TitleOption
 import me.tomnewton.discordbot.commands.arguments.Arguments
+import me.tomnewton.discordbot.database.Model
 import me.tomnewton.discordbot.placeholders.AlertPlaceholders
 import me.tomnewton.discordbot.placeholders.MemberPlaceholder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageChannel
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageChannel
 import org.bson.Document
 
-class TestCommand(private val guildDocuments: Map<Long, Document>) : Command {
+class TestCommand(private val guildDocuments: Map<Long, Model>) : Command {
 
     override fun getName() = "test"
 

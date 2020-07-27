@@ -3,9 +3,9 @@ package me.tomnewton.discordbot.commands.information
 import me.tomnewton.discordbot.alerts.Alert
 import me.tomnewton.discordbot.commands.Command
 import me.tomnewton.discordbot.commands.arguments.Arguments
-import me.tomnewton.discordbot.utils.Registry
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageChannel
+import me.tomnewton.discordbot.registries.Registry
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageChannel
 
 class PlaceholderListCommand(private val prefix: String, private val commands: Registry<String, Command>) : Command {
 

@@ -1,11 +1,11 @@
 package me.tomnewton.discordbot.listeners
 
 import me.tomnewton.discordbot.commands.Command
-import me.tomnewton.discordbot.commands.CommandRegistry
 import me.tomnewton.discordbot.commands.arguments.Arguments
-import net.dv8tion.jda.core.entities.ChannelType
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import me.tomnewton.discordbot.registries.CommandRegistry
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class CommandListener(private val prefix: String, private val commandRegistry: CommandRegistry) : ListenerAdapter() {
 
@@ -22,7 +22,7 @@ class CommandListener(private val prefix: String, private val commandRegistry: C
             Arguments(emptyList()) else Arguments(parts.subList(1, parts.size))
 
         if (command.getMinimumArguments() > arguments.size) {
-            // TODO send the usage
+            // TODO send the usage still gotta do this
         } else {
             command.execute(event.message, event.channel, arguments)
         }

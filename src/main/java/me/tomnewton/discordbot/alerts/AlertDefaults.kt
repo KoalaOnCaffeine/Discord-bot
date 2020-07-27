@@ -1,7 +1,7 @@
 package me.tomnewton.discordbot.alerts
 
 import me.tomnewton.discordbot.alerts.options.Option
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 
 class AlertDefaults {
 

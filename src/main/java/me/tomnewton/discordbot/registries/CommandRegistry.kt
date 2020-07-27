@@ -1,6 +1,6 @@
-package me.tomnewton.discordbot.commands
+package me.tomnewton.discordbot.registries
 
-import me.tomnewton.discordbot.utils.Registry
+import me.tomnewton.discordbot.commands.Command
 
 class CommandRegistry : Registry<String, Command> {
 
@@ -13,6 +13,6 @@ class CommandRegistry : Registry<String, Command> {
 
     override fun contains(key: String) = map.containsKey(key.toLowerCase())
 
-    override fun get(key: String) : Command? = map[key.toLowerCase()]
+    override fun get(key: String): Command? = map[key.toLowerCase()]
 
 }

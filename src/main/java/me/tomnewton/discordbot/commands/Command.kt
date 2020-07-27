@@ -6,8 +6,8 @@ import me.tomnewton.discordbot.alerts.options.simple.TitleOption
 import me.tomnewton.discordbot.commands.arguments.Arguments
 import me.tomnewton.discordbot.placeholders.Placeholders
 import me.tomnewton.discordbot.utils.DelayContext
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageChannel
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageChannel
 
 private val DEFAULT_TITLE = TitleOption("No title")
 private val DEFAULT_CONTENT = ContentOption("No content")

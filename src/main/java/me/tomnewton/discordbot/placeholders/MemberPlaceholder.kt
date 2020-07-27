@@ -1,8 +1,8 @@
 package me.tomnewton.discordbot.placeholders
 
 import me.tomnewton.discordbot.getMember
-import net.dv8tion.jda.core.entities.Member
-import net.dv8tion.jda.core.entities.User
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 
 class MemberPlaceholder : Placeholder<Member> {
 
@@ -13,8 +13,8 @@ class MemberPlaceholder : Placeholder<Member> {
             "nickname" to closure { nickname ?: effectiveName },
             "mention" to Member::getAsMention,
             "color" to closure { "#${colorRaw}" },
-            "game" to closure { game?.name ?: "None" },
-            "joindate" to closure { joinDate.toLocalDate().toString() },
+            "game" to closure { onlineStatus.key ?: "None" },
+            "joindate" to closure { timeJoined.toLocalDate().toString() },
             "status" to closure { onlineStatus.key.capitalize() })
 
     override fun canApplyUsing(any: Any?) = any != null && (any is User || any is Member)
