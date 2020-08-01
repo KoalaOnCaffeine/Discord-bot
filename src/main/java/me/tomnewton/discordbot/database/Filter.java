@@ -6,6 +6,8 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -14,13 +16,21 @@ import java.util.stream.Collectors;
 
 public interface Filter extends Bson {
 
+    static Filter of(List<Pair<String, Object>> criteria) {
+        return () -> criteria;
+    }
+
+    static Filter of(Pair<String, Object> criteria) {
+        return () -> Collections.singletonList(criteria);
+    }
+
     /**
      * A method showing the keys and values required to be accepted by the filter
      *
      * @return The Pairs of Strings defining the filter
      */
 
-    Collection<Pair<String, String>> getCriteria();
+    Collection<Pair<String, Object>> getCriteria();
 
     /**
      * Render the filter into a BsonDocument.
@@ -47,8 +57,8 @@ public interface Filter extends Bson {
      * @return The json string form of the pair
      */
 
-    private String mapPairToJson(Pair<String, String> pair) {
-        return String.format("\"%s\": \"%s\"", pair.getFirst(), pair.getSecond());
+    private String mapPairToJson(Pair<String, Object> pair) {
+        return String.format("\"%s\": %s", pair.getFirst(), pair.getSecond());
     }
 
 }
