@@ -4,7 +4,6 @@ import me.tomnewton.discordbot.alerts.Alert
 import me.tomnewton.discordbot.alerts.options.simple.ContentOption
 import me.tomnewton.discordbot.alerts.options.simple.TitleOption
 import me.tomnewton.discordbot.commands.arguments.Arguments
-import me.tomnewton.discordbot.placeholders.Placeholders
 import me.tomnewton.discordbot.utils.DelayContext
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
@@ -24,13 +23,11 @@ interface Command {
 
     fun getAliases(): Array<String> = emptyArray()
 
-    fun getPlaceholders(): Placeholders<Alert> = Placeholders.empty()
-
     fun execute(message: Message, channel: MessageChannel, arguments: Arguments<String>)
 
     fun respond(message: Message, channel: MessageChannel, alert: Alert, delayContext: DelayContext = DelayContext(), parameters: Array<Any> = emptyArray()) {
         alert.registerDefaults()
-        getPlaceholders().applyAllPlaceholders(alert, parameters)
+        // TODO: Use placeholders
         alert.send(channel).apply {
             if (delayContext.delay > 0) {
                 message.deleteAfter(delayContext)
