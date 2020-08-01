@@ -12,7 +12,7 @@ import java.util.Collections;
 
 public class MongoIDFilter implements Filter {
 
-    private final Collection<Pair<String, String>> criteria;
+    private final Collection<Pair<String, Object>> criteria;
 
     /**
      * A constructor to create MongoIDFilter instances
@@ -20,8 +20,8 @@ public class MongoIDFilter implements Filter {
      * @param id The ID to apply for the filter
      */
 
-    public MongoIDFilter(String id) {
-        criteria = Collections.singletonList(new Pair<>("_id", id));
+    public MongoIDFilter(Object id) {
+        criteria = Collections.singletonList(new Pair<>("_id", "ObjectId(\"" + id + "\")"));
     }
 
     /**
@@ -31,7 +31,7 @@ public class MongoIDFilter implements Filter {
      */
 
     @Override
-    public Collection<Pair<String, String>> getCriteria() {
+    public Collection<Pair<String, Object>> getCriteria() {
         return criteria;
     }
 }
