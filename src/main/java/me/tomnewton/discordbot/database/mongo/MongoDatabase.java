@@ -2,6 +2,7 @@ package me.tomnewton.discordbot.database.mongo;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
 import me.tomnewton.discordbot.database.Database;
 import me.tomnewton.discordbot.database.Filter;
 import me.tomnewton.discordbot.database.Model;
@@ -102,7 +103,8 @@ public class MongoDatabase implements Database {
      */
     @Override
     public void save(Model model) {
-        connector.getCollection().insertOne(new Document(model.getValues()));
+        final MongoCollection<Document> documents = connector.getCollection();
+        documents.findOneAndReplace(new MongoIDFilter(model.getId()), new Document(model.getValues()));
     }
 
     /**
@@ -110,7 +112,6 @@ public class MongoDatabase implements Database {
      *
      * @return The underlying {@link MongoClient}
      */
-
     public MongoClient getClient() {
         return client;
     }
