@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 public class MongoModel implements Model {
 
     private final Document document;
-    private final Object id;
-    private final Map<String, Object> values;
+    private final String id;
+    private Map<String, Object> values;
 
     /**
      * A constructor to create MongoModel instances
@@ -22,7 +22,7 @@ public class MongoModel implements Model {
 
     public MongoModel(Document document) {
         this.document = document;
-        this.id = document.get("_id");
+        this.id = document.get("_id").toString();
         this.values = document.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -33,7 +33,7 @@ public class MongoModel implements Model {
      */
 
     @Override
-    public Object getId() {
+    public String getId() {
         return id;
     }
 
@@ -48,6 +48,27 @@ public class MongoModel implements Model {
     @Override
     public Object get(String string) {
         return document.get(string);
+    }
+
+    /**
+     * A method to set a string path to a value
+     *
+     * @param string The path of the object
+     * @param value  The value to set it to
+     */
+    @Override
+    public void set(String string, Object value) {
+        values.put(string, value);
+    }
+
+    /**
+     * A method to set all of the values in the model
+     *
+     * @param values The values to set for the model
+     */
+    @Override
+    public void setValues(Map<String, Object> values) {
+        this.values = values;
     }
 
     /**
