@@ -8,6 +8,6 @@ interface Registry<K, V> {
 
     fun contains(key: K) = map.containsKey(key)
 
-    fun get(key: K): V? = map[key]
+    operator fun get(key: K): V? = map[key]
 
 }
