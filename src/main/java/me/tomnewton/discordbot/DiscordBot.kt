@@ -1,63 +1,61 @@
 package me.tomnewton.discordbot
 
-import me.tomnewton.discordbot.commands.TestCommand
-import me.tomnewton.discordbot.commands.information.PlaceholderListCommand
 import me.tomnewton.discordbot.database.Database
-import me.tomnewton.discordbot.database.Model
 import me.tomnewton.discordbot.database.mongo.MongoDatabase
 import me.tomnewton.discordbot.listeners.CommandListener
 import me.tomnewton.discordbot.listeners.GuildJoinListener
 import me.tomnewton.discordbot.registries.CommandRegistry
+import me.tomnewton.discordbot.registries.GuildInformationRegistry
 import me.tomnewton.discordbot.registries.ListenerRegistry
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
+import org.bson.Document
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 
 private lateinit var bot: JDA
 val parser: JSONParser = JSONParser()
 
-private val guilds = mutableMapOf<Long, Model>()
-private val json = String(ClassLoader.getSystemResource("options.json").readBytes())
-private val values = parser.parse(json) as JSONObject
+private val optionsJson = String(ClassLoader.getSystemResource("options.json").readBytes())
+private val guildJson = String(ClassLoader.getSystemResource("guild.json").readBytes())
+private val options = parser.parse(optionsJson) as JSONObject
+
+val database: Database = MongoDatabase.create(
+        options.getValue("database.username"),
+        options.getValue("database.password"),
+        options.getValue("database.database_name"),
+        "Collection")
 
 private lateinit var prefix: String
+
+/**
+ * Gets a member from a user, requires the GUILD_MEMBERS intent (enable on discord developer portal)
+ */
 
 fun getMember(using: User): Member? = bot.getMutualGuilds(using).getOrNull(0)?.getMember(using)
 
 fun main() {
-    bot = JDABuilder.create(GatewayIntent.getIntents(GatewayIntent.DEFAULT)).setToken(values["token"] as String).build()
+
+    bot = JDABuilder.create(GatewayIntent.getIntents(GatewayIntent.DEFAULT.or(GatewayIntent.GUILD_MEMBERS.rawValue))).setToken(options["token"] as String).build()
     val commandRegister = CommandRegistry()
     val listenerRegistry = ListenerRegistry(bot)
-    prefix = values.getValue("prefix")!!
-
-    val database: Database = MongoDatabase.create(
-            values.getValue("database.username")!!,
-            values.getValue("database.password")!!,
-            values.getValue("database.database_name")!!, "Collection")
+    prefix = options.getValue("prefix")!!
 
     database.connect()
 
-    database.find().forEach {
-        guilds[it.get("Guild ID").toString().toLong()] = it
-    }
+    val guilds = GuildInformationRegistry(Document.parse(guildJson), database::save)
 
-    database.find().forEach {
-        println(it.values)
-    }
-
-    commandRegister.register(TestCommand(guilds))
-    commandRegister.register(PlaceholderListCommand(prefix, commandRegister))
+    database.find().forEach(guilds::register)
 
     listenerRegistry.register(setOf(
             CommandListener(prefix, commandRegister),
-            GuildJoinListener(database)
+            GuildJoinListener(database, guilds)
     ))
-
     bot.awaitReady()
+
 }
 
 inline fun <reified T> JSONObject.getValue(path: String): T? {
